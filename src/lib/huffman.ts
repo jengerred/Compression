@@ -1,4 +1,4 @@
-type HuffmanNode = {
+export type HuffmanNode = {
   char?: string;
   freq: number;
   left?: HuffmanNode;
@@ -68,3 +68,21 @@ export function decompress(compressed: string, tree: HuffmanNode): string {
   }
   return result;
 }
+
+// Converts bitstring to Uint8Array (bit packing)
+export function bitsToBytes(bitString: string): Uint8Array {
+  const bytes = new Uint8Array(Math.ceil(bitString.length / 8));
+  for (let i = 0; i < bytes.length; i++) {
+    const byteBits = bitString.substr(i * 8, 8).padEnd(8, "0");
+    bytes[i] = parseInt(byteBits, 2);
+  }
+  return bytes;
+}
+
+// Converts Uint8Array to hex string for display
+export function toHex(byteArr: Uint8Array): string {
+  return Array.from(byteArr)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join(" ");
+}
+
