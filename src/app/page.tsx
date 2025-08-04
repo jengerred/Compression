@@ -1,22 +1,38 @@
 "use client";
+
 import { useState } from "react";
 import FileInput from "../components/FileInput";
 import TextInput from "../components/TextInput";
 import ResultDisplay from "../components/ResultDisplay";
+import { compress, decompress, HuffmanNode } from "../lib/huffman";
 
 export default function HomePage() {
   const [inputText, setInputText] = useState<string>("");
   const [result, setResult] = useState<string>("");
   const [mode, setMode] = useState<"compress" | "decompress">("compress");
+  const [currentTree, setCurrentTree] = useState<HuffmanNode | null>(null);
 
   function handleCompress() {
-    // TODO: Add your Huffman compress logic here
-    setResult("⚡ Compressed data will appear here");
+    if (!inputText) {
+      setResult("Please enter some text to compress");
+      return;
+    }
+    const { compressed, tree } = compress(inputText);
+    setResult(compressed);
+    setCurrentTree(tree);
   }
 
   function handleDecompress() {
-    // TODO: Add your Huffman decompress logic here
-    setResult("🔓 Decompressed data will appear here");
+    if (!result || !currentTree) {
+      setResult("No compressed data or Huffman tree available for decompression");
+      return;
+    }
+    try {
+      const decompressed = decompress(result, currentTree);
+      setResult(decompressed);
+    } catch (err) {
+      setResult("Decompression error: Invalid compressed data or tree");
+    }
   }
 
   return (
