@@ -6,6 +6,8 @@ import TextInput from "../components/TextInput";
 import ResultDisplay from "../components/ResultDisplay";
 import FrequencyTable from "../components/FrequencyTable";
 import HexOutputList from "../components/HexOutputList";
+import NarrationPanel, { narrations } from "@/components/Narration";
+
 import {
   compress,
   decompress,
@@ -27,6 +29,13 @@ export default function HomePage() {
   const [currentTree, setCurrentTree] = useState<HuffmanNode | null>(null);
   const [frequencyMap, setFrequencyMap] = useState<Map<string, number> | null>(null);
   const [compressedBytes, setCompressedBytes] = useState<Uint8Array | null>(null);
+  const [narrationIndex, setNarrationIndex] = useState(0);
+
+
+const nextNarration = () =>
+  setNarrationIndex((i) => Math.min(i + 1, narrations.length - 1));
+  const prevNarration = () =>
+    setNarrationIndex((i) => Math.max(i - 1, 0));
 
   function handleDemoLoad(which: "small" | "large") {
     setInputText(DEMOS[which]);
@@ -106,7 +115,7 @@ export default function HomePage() {
               <span role="img" aria-label="file">
                 📂
               </span>{" "}
-              Browse
+              Browse...
               <FileInput
                 onLoad={setInputText}
                 style={{ display: "none" }}
@@ -179,10 +188,35 @@ export default function HomePage() {
         {/* BOTTOM PANEL */}
         <section className="huffman-bottom">
           <div className="huffman-explanation">
-            <strong>How it works:</strong> Enter or upload text and compress
-            using Huffman encoding. The character frequency table below shows
-            the distribution that builds the Huffman tree. This area is where
-            animations will be added.
+              {/* Narration display */}
+        <NarrationPanel currentIndex={narrationIndex} />
+
+
+        {/* Navigation buttons */}
+        <div style={{ marginTop: 12, display: "flex", gap: "8px",   justifyContent: "center",}}>
+          <button
+            onClick={prevNarration}
+            disabled={narrationIndex === 0}
+              style={{
+                border: "1px solid #ccc",
+                borderRadius: "1rem",
+                padding: "0.5em"
+                  }}
+          >
+            ⬅️ Back
+          </button>
+          <button
+            onClick={nextNarration}
+            disabled={narrationIndex === narrations.length - 1}
+              style={{
+                border: "1px solid #ccc",
+                borderRadius: "1rem",
+                padding: "0.5em"
+                  }}
+                >
+            Next  ➡️
+          </button>
+        </div>
           </div>
 
           {mode === "compress" && frequencyMap && (
@@ -365,14 +399,13 @@ export default function HomePage() {
           border-radius: 12px;
           box-shadow: 0 1px 6px #dde2ff13;
           color: #345;
-          font-size: 1rem;
+          font-size: rem;
           letter-spacing: 0.004em;
           line-height: 1.55;          padding: 1rem 1.5rem;
           font-weight: 450;
-          margin-bottom: 0.85rem;
           margin-top: -2rem;
-margin-left: auto;
-margin-right: auto;
+          margin-left: auto;
+          margin-right: auto;
         }
         .huffman-freqbox {
           width: 100%;
