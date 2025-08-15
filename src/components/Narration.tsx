@@ -69,7 +69,16 @@ export const narrations = [
       Compress
     </span>, I sprang into action:
 
-   <ul style={{ listStyleType: "disc", paddingLeft: "1.5rem" }}>
+<br/>
+<span style={{ fontWeight: "bold", color: colorStyles.steelBlue }}>Click Continue to learn how I completed these actions.</span>
+</div>,
+
+  <div key="frequency_chart" style={{ whiteSpace: "pre-line"}}>
+  <p style={{ textAlign:"center", fontWeight:"bold"}}>This frequency table is the foundation of efficient compression!</p>
+
+     <p style={{ textAlign:"center"}}>This character frequency chart displays every character and its frequency from the text file, providing a complete overview of your data. </p>
+    <p style={{fontWeight:"bold"}}>How I created this frequency chart:</p>
+       <ul style={{ listStyleType: "disc", paddingLeft: "1.5rem" }}>
   <li>I read your file byte by byte.</li>
   <li>
     For every character, I updated a frequency table&mdash;an array with 256 slots
@@ -77,31 +86,20 @@ export const narrations = [
   </li>
   <li>Each time a character appeared, I incremented its count in the array.</li>
 </ul>
-
-
-    <strong>
-      This frequency table is the foundation of efficient compression!
-    </strong>{" "}
-    This character frequency chart displays every character and its frequency from your input file, providing a complete overview of your data.
-
    
-      <br/>💡 <span style={{ fontStyle: "italic", fontWeight:"bold"}}> For clarity and readability in the steps ahead, I&apos;ll be showcasing only the first 20 characters &mdash; so we won&apos;t be overwhelmed by a massive wall of text!
+  </div>,
+
+<div style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>
+  <strong style={{ display: "block", marginBottom: 8 }}>
+    ✨ Previewing Your Text ✨
+  </strong>
+<span> <p style={{textAlign: "center"}}> 💡 For clarity and readability in the steps ahead, I&apos;ll be showcasing only the first 20 characters &mdash; so we won&apos;t be overwhelmed by a massive wall of text! 🔍 🔡</p>
     </span>
-  </div>,
+    <br/>
+  <p style={{textAlign: "center", fontWeight:"bold"}}>  
+    Ready? Let’s dive in! 🚀</p>
+</div>,
 
-  <div key="first20Raw" style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>
-    
-    <strong style={{ display: "block", marginBottom: 8 }}>
-     👀 PREVIEW: THE FIRST 20 RAW CHARACTERS
-    </strong>
-    Here are the first 20 characters from your file, shown exactly as they appear in the raw data.{" "}
-    <em>Depending on your file, you might see only normal, readable text&mdash;or you might notice some &apos;weird&apos; or unreadable symbols.</em>
-
-    These unusual symbols can appear if your file contains special control characters, formatting codes, or other non-printable bytes that aren&apos;t meant to be displayed as regular text.
-
-    To keep things clear and easy to understand, I&apos;ll focus only on the{" "}
-    <strong>first 20 readable characters</strong> (letters, numbers, punctuation, and spaces) in the steps ahead. This way, you&apos;ll always get a preview that&apos;s meaningful and easy to follow, no matter what kind of file you use!
-  </div>,
 
   <div key="huffmanTree" style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>
    

@@ -73,11 +73,12 @@ export function decompress(compressed: string, tree: HuffmanNode): string {
 export function bitsToBytes(bitString: string): Uint8Array {
   const bytes = new Uint8Array(Math.ceil(bitString.length / 8));
   for (let i = 0; i < bytes.length; i++) {
-    const byteBits = bitString.substr(i * 8, 8).padEnd(8, "0");
+    const byteBits = bitString.slice(i * 8, i * 8 + 8).padEnd(8, "0");
     bytes[i] = parseInt(byteBits, 2);
   }
   return bytes;
 }
+
 
 // Converts Uint8Array to hex string for display
 export function toHex(byteArr: Uint8Array): string {
