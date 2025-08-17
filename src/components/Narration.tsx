@@ -59,18 +59,18 @@ export const narrations = [
   <div key="compressionIntro" style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>
     
     <strong style={{ display: "block", marginBottom: 8 }}>
-      ⚡ DONE WITH COMPRESSION!
+      <p style={{textAlign:"center" }}>⚡ DONE WITH COMPRESSION! </p>
     </strong>
     Although that was incredibly fast, here&apos;s what I was actually doing in the
     background to make your results both quick and accurate:
-
+<br/>
     As soon as you clicked{" "}
     <span style={{ fontWeight: "bold", color: colorStyles.steelBlue }}>
       Compress
     </span>, I sprang into action:
 
 <br/>
-<span style={{ fontWeight: "bold", color: colorStyles.steelBlue }}>Click Continue to learn how I completed these actions.</span>
+<p style={{ fontWeight: "bold", color: colorStyles.steelBlue, textAlign:"center" }}>Click Continue to learn how I completed these actions.</p>
 </div>,
 
   <div key="frequency_chart" style={{ whiteSpace: "pre-line"}}>
@@ -91,7 +91,7 @@ export const narrations = [
 
 <div style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>
   <strong style={{ display: "block", marginBottom: 8 }}>
-    ✨ Previewing Your Text ✨
+  <p style={{textAlign:"center"}}>    ✨ Previewing Your Text ✨ </p>
   </strong>
 <span> <p style={{textAlign: "center"}}> 💡 For clarity and readability in the steps ahead, I&apos;ll be showcasing only the first 20 characters &mdash; so we won&apos;t be overwhelmed by a massive wall of text! 🔍 🔡</p>
     </span>
@@ -103,118 +103,120 @@ export const narrations = [
 
   <div key="huffmanTree" style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>
    
-    <strong style={{ display: "block", marginBottom: 8 }}>
-      🌳 BUILDING THE HUFFMAN TREE
+    <strong style={{ display: "block", marginBottom: 8}}>
+      <p style={{textAlign:"center"}}>  🌳 BUILDING THE HUFFMAN TREE</p>
     </strong>
-    With the frequency table ready, I jumped straight into the next phase:{" "}
-    <em>This special binary tree (not a binary search tree!) is cleverly structured so that the most frequent characters end up closer to the root, which means their paths (and codes) are shorter and compression is more efficient!</em>
-
-    • I took every character that showed up in your file and made it into a leaf node, each one labeled with its character and how often it appeared.
-    • Then, like a matchmaker for bytes, I kept finding the two nodes with the lowest frequencies and merged them into a new parent node. This parent&rsquo;s frequency is simply the sum of its two children.
-    • I repeated this merging process&mdash;always picking the two smallest&mdash;until only one node remained at the very top: the root of the Huffman tree.
+   <p style={{fontWeight:"bold"}}>With the frequency table ready, I jumped straight into the next phase:{" "}</p> 
+     <ul style={{ listStyleType: "disc", paddingLeft: "1.5rem" }}>
+<li>I took every character that showed up in your file and made it into a leaf node, each one labeled with its character and how often it appeared.
+   </li>
+<li> Then, like a matchmaker for bytes, I kept finding the two nodes with the lowest frequencies and merged them into a new parent node. This parent&rsquo;s frequency is simply the sum of its two children.
+   </li>
+<li>I repeated this merging process&mdash;always picking the two smallest&mdash;until only one node remained at the very top: the root of the Huffman tree.
+ </li>
+       </ul>
+       <br/>
+       <p style={{textAlign:"center", fontStyle:"italic"}}>This special binary tree is cleverly structured so that the most frequent characters end up closer to the root, which means their paths (and codes) are shorter and compression is more efficient!</p>
+      
   </div>,
 
   <div key="encodeData" style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>
    
     <strong style={{ display: "block", marginBottom: 8 }}>
-      💾 CREATING THE BINARY CODE
+       <p style={{textAlign:"center"}}>  💾 CREATING THE BINARY CODE </p>
     </strong>
-    With the Huffman tree built, I assigned a unique binary code to each character in your file:{" "}
-    <em>Every left move adds a &lsquo;0&rsquo;, every right move adds a &lsquo;1&rsquo; to the code.</em>
-
-    For every character in your file, I traced a path from the root of the tree down to that character&rsquo;s leaf node. This traversal produces a distinct sequence of bits (0s and 1s) for each character based on its path through the tree. By replacing every character in your data with its binary code, I transformed your original text into a long, compressed stream of bits&mdash;ready for the next stage!
+   <p style={{fontWeight:"bold"}}>With the Huffman tree built, I assigned a unique binary code to each character in your file:{" "}</p>
+    <em> This binary sequence corresponds exactly to the edges traversed from the root down to each character&rsquo;s leaf node.</em>
+<br/>
+    For every character in your file, I traced a path from the root of the tree down to that character&rsquo;s leaf node. Starting from the root node of the tree, a &lsquo;0&rsquo;, is added to the code whenever the path moves to a left child node, and a &lsquo;1&rsquo; is added whenever it moves to a right child node.
+    This traversal produces a distinct sequence of bits (0s and 1s) for each character based on its path through the tree. 
+    <br/> <br/>
+    <p style={{textAlign:"center", fontWeight:"bold"}}>By replacing every character in your data with its binary code, I transformed your original text into a long, compressed stream of bits&mdash;ready for the next stage!</p>
   </div>,
 
   <div key="packBinaryData" style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>
    
     <strong style={{ display: "block", marginBottom: 8 }}>
-      📦 GROUPING THE BINARY CODE INTO BYTES
+       <p style={{textAlign:"center"}}> 📦 GROUPING THE BINARY CODE INTO BYTES</p>
     </strong>
-    Now that your entire message is represented as a continuous stream of 0s and 1s, I prepared it for storage as a file:{" "}
+    <p style={{fontWeight:"bold"}}>Now that your entire message is represented as a continuous stream of 0s and 1s, I prepared it for storage as a file:{" "}</p>
     <em>I grouped the bits into bytes, padding zeros if needed, and wrote them to the compressed file.</em>
-
+<br/>
     I also converted these bytes into hexadecimal numbers for display and debugging purposes.
   </div>,
 
   <div key="compressionResults" style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>
    
     <strong style={{ display: "block", marginBottom: 8 }}>
-     📦 COMPRESSED OUTPUT (HEX): ACTUAL FILE RESULT
+  <p style={{textAlign:"center"}}>📦 COMPRESSED OUTPUT (HEX): ACTUAL FILE RESULT</p> 
     </strong>
-    The original file you uploaded had a size of originalSize bytes. After compressing it, the size is now compressedSize bytes.
-
+    The original file you uploaded had a size of originalSize bytes. 
+    <br/>After compressing it, the size is now compressedSize bytes.
+<br/>
     That means the compression ratio is ratio%.
-
-    Your compressed file has been automatically saved in your project folder.
-
+<br/>
     Below is the actual compressed output for your entire file, shown in hexadecimal&mdash;this is the true content of your file, not just the preview used for animation.
   </div>,
 
-  <div key="readyToRestore" style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>
+  <div key="readyToRestore" style={{ whiteSpace: "pre-line", fontSize: "0.8rem", textAlign:"center" }}>
     <strong style={{ fontWeight: "bold", color: colorStyles.darkGreen, display: "block", marginBottom: 8 }}>
-      READY TO RESTORE YOUR FILE!?
+      <p style={{textAlign:"center"}}>  READY TO RESTORE YOUR FILE!? </p>
     </strong>
-    ⬅️ Click the &quot;Decompress&quot; button to begin! ⬅️
-
-    ⬇️ Or click the &quot;Next&quot; button to continue with just the first 20 characters. ⬇️
+     ⬇️ Click the &quot;Decompress&quot; button to begin!  ⬇️
   </div>,
 
   <div key="decompressionComplete" style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>
    
     <strong style={{ display: "block", marginBottom: 8 }}>
-      ✅ DECOMPRESSION COMPLETE!
+       <p style={{textAlign:"center"}}> ✅ DECOMPRESSION COMPLETE!</p>
     </strong>
+           <p style={{fontWeight:"bold"}}>  🔓 DECOMPRESSION RESULTS: YOUR FILE IS BACK!</p>
   ✨ Your file has been fully restored. Every letter, space, and symbol is now back in its original place&mdash;thanks to the magic of Huffman coding! ✨
+
+   <br/>
+    Your original content is now perfectly reconstructed, no data lost, no changes made.
+ 
   </div>,
 
   <div key="decompressionTreeExplanation" style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>
    
     <strong style={{ display: "block", marginBottom: 8 }}>
-      🌳 REMEMBER THAT HUFFMAN TREE WE BUILT DURING COMPRESSION?
+       <p style={{textAlign:"center"}}> 🌳 REMEMBER THAT HUFFMAN TREE WE BUILT DURING COMPRESSION?</p>
     </strong>
-    I just put it to work! Here&rsquo;s how your file was restored:
-
-    • I read the compressed file bit by bit, following each &#39;0&#39; and &#39;1&#39; through the Huffman tree.
-    • Every time I reached a leaf node, I uncovered one of your original characters and added it to the output.
-    • This process continued until your entire file was rebuilt, character by character, exactly as it was before compression.
-
+    <p style={{fontWeight:"bold"}}>  I just put it to work! Here&rsquo;s how your file was restored: </p>
+   <ul style={{ listStyleType: "disc", paddingLeft: "1.5rem" }}>
+    <li>I read the compressed file bit by bit, following each &#39;0&#39; and &#39;1&#39; through the Huffman tree.</li> 
+    <li>Every time I reached a leaf node, I uncovered one of your original characters and added it to the output.</li>
+    <li>This process continued until your entire file was rebuilt, character by character, exactly as it was before compression. </li>
+</ul>
     Thanks to the power of Huffman coding, not a single letter, space, or symbol was lost or changed. Your data is safe and sound!
 
-    You can now open your restored file and see your original content, perfectly reconstructed.
+    You can now see your original content, perfectly reconstructed.
   </div>,
 
-  <div key="decompressionResults" style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>
-   
-    <strong style={{ display: "block", marginBottom: 8 }}>
-       🔓 DECOMPRESSION RESULTS: YOUR FILE IS BACK!
-    </strong>
-    Your file has been fully restored and saved in your project files.
 
-    Every letter, space, and symbol is back in its original place&mdash;no data lost, no changes made!
-
-    You can now open this new file to see your original content, perfectly reconstructed and ready to use.
-  </div>,
 
   <div key="finalConclusion" style={{ whiteSpace: "pre-line", fontSize: "0.8rem" }}>
    
     <strong style={{ display: "block", marginBottom: 8 }}>
-      🏁 ALL DONE! YOU&apos;VE MASTERED HUFFMAN COMPRESSION
+      <p style={{textAlign:"center"}}>  🏁 ALL DONE! YOU&apos;VE MASTERED HUFFMAN COMPRESSION </p>
     </strong>
 
-    🤝 What a journey! Together, we:
-
-    • Explored your file&rsquo;s characters and counted how often each one appeared.
-    • Built a Huffman tree, merging nodes step by step until just one remained at the top.
-    • Created unique binary codes for each character, making your data as compact as possible.
-    • Packed all those bits into real bytes, ready for storage or sharing.
-    • And finally, decompressed your file&mdash;restoring every letter, space, and symbol, perfectly intact!
-
-    <br/><br/>💡 Huffman coding is a powerful tool, and now you&rsquo;ve seen it in action&mdash;from start to finish!
-
-    Thank you for exploring data compression with me. If you want to try again, just upload or click on a new file to replay the animation!
-
-  
-    <br/><p style={{textAlign:"center"}}>👋 This is the end of our journey&mdash;for now. Until next time, happy compressing!</p>
+    <p style={{fontWeight:"bold"}}>  🤝 What a journey! Together, we: </p>
+   <ul style={{ listStyleType: "disc", paddingLeft: "1.5rem" }}>
+    <li>Explored your file&rsquo;s characters and counted how often each one appeared.</li>
+    <li>Built a Huffman tree, merging nodes step by step until just one remained at the top.</li>
+    <li>Created unique binary codes for each character, making your data as compact as possible.</li>
+    <li>Packed all those bits into real bytes, ready for storage or sharing.</li>
+    <li>And finally, decompressed your file&mdash;restoring every letter, space, and symbol, perfectly intact!</li>
+</ul>
+    <br/>
+    <p style={{fontWeight:"bold"}}>💡 Huffman coding is a powerful tool, and now you&rsquo;ve seen it in action&mdash;from start to finish!
+<br/>
+</p>
+<br/>
+  <p style={{textAlign:"center", fontWeight:"bold"}}>    Thank you for exploring data compression with me.
+    <br/>👋 This is the end of our journey&mdash;for now. Until next time, happy compressing!</p>
   </div>,
 ];
 

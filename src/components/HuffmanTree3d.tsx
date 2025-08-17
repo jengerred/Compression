@@ -17,6 +17,7 @@ interface HuffmanTreeNode {
 
 interface HuffmanTree3DProps {
   inputText: string;
+    onTreeBuilt?: (tree: HuffmanTreeNode) => void; 
 }
 
 function buildHuffmanTree(freqMap: Map<string, number>): HuffmanTreeNode | null {
@@ -80,7 +81,8 @@ function centerTree(root: HuffmanTreeNode) {
   shift(root);
 }
 
-export default function HuffmanTree3D({ inputText }: HuffmanTree3DProps) {
+export default function HuffmanTree3D({ inputText, onTreeBuilt }: HuffmanTree3DProps) {
+
   const mountRef = useRef<HTMLDivElement | null>(null);
   const controlsRef = useRef<InstanceType<typeof OrbitControls> | null>(null);
 
@@ -149,6 +151,11 @@ export default function HuffmanTree3D({ inputText }: HuffmanTree3DProps) {
     });
 
     centerTree(huffmanRoot);
+
+(huffmanRoot as any)._layoutRadius = radius;
+if (typeof onTreeBuilt === "function") {
+  onTreeBuilt(JSON.parse(JSON.stringify(huffmanRoot)));
+}
 
     const sphereGeo = new THREE.SphereGeometry(radius, 20, 20);
 
@@ -421,7 +428,8 @@ export default function HuffmanTree3D({ inputText }: HuffmanTree3DProps) {
       if (controlsRef.current) controlsRef.current.dispose();
       setNodeLabels([]);
     };
-  }, [inputText]);
+}, [inputText, onTreeBuilt]);
+
 
   return (
     <div style={{ position: "relative", width: "100%", height: "600px" }}>

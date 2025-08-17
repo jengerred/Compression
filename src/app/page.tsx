@@ -9,6 +9,8 @@ import NarrationPanel, { narrations } from "@/components/Narration";
 import HuffmanTree3D from "@/components/HuffmanTree3d"; // Adjust path as needed
 import { loadAndCompressDemo } from "@/lib/demoLoader";
 import { useEffect } from "react";
+import HuffmanCodePathAnimation from "@/components/HuffmanCode";
+
 
 
 import {
@@ -32,7 +34,7 @@ export default function HomePage() {
   const [narrationIndex, setNarrationIndex] = useState(0);
   const [showContentAfterCompress, setShowContentAfterCompress] = useState(false);
   const [showFrequencyAndSecondNarration, setShowFrequencyAndSecondNarration] = useState(false);
-
+const [visualizedTree, setVisualizedTree] = useState<HuffmanNode | null>(null);
 
  // Add this logging effect
   useEffect(() => {
@@ -330,7 +332,15 @@ async function handleDemoLoadAndCompress(which: "small" | "large") {
     <div className="huffman-freqlabel">
       3D Huffman Tree Animation (First 20 Readable Characters)
     </div>
-    <HuffmanTree3D inputText={inputText} />
+ <HuffmanTree3D inputText={inputText} onTreeBuilt={setVisualizedTree} />
+
+  </div>
+)}
+
+{showFrequencyAndSecondNarration && narrationIndex === 5 && visualizedTree && (
+  <div className="huffman-freqbox" style={{ padding: "1rem" }}>
+    <div className="huffman-freqlabel">Character Code Path Animation</div>
+    <HuffmanCodePathAnimation tree={visualizedTree} />
   </div>
 )}
 
