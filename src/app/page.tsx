@@ -1,17 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FileInput from "../components/FileInput";
 import TextInput from "../components/TextInput";
 import FrequencyTable from "../components/FrequencyTable";
 import HexOutputList from "@/components/HexOutputList";
-import NarrationPanel, { narrations } from "@/components/Narration";
+import NarrationPanel from "@/components/Narration";
 import HuffmanTree3D from "@/components/HuffmanTree3d"; // Adjust path as needed
 import { loadAndCompressDemo } from "@/lib/demoLoader";
-import { useEffect } from "react";
 import HuffmanCodePathAnimation from "@/components/HuffmanCode";
-
-
+import BinaryStringToHexAnimator from "@/components/HexAnimation";
 
 import {
   compress,
@@ -22,7 +20,8 @@ import {
   HuffmanNode,
 } from "../lib/huffman";
 
-
+// Set this to the number of distinct narrations in your Narration file
+const NARRATION_COUNT = 11; // <-- UPDATE this as needed!
 
 export default function HomePage() {
   const [inputText, setInputText] = useState<string>("");
@@ -31,56 +30,56 @@ export default function HomePage() {
   const [currentTree, setCurrentTree] = useState<HuffmanNode | null>(null);
   const [frequencyMap, setFrequencyMap] = useState<Map<string, number> | null>(null);
   const [compressedBytes, setCompressedBytes] = useState<Uint8Array | null>(null);
+  const [compressedBitString, setCompressedBitString] = useState<string>("");
   const [narrationIndex, setNarrationIndex] = useState(0);
   const [showContentAfterCompress, setShowContentAfterCompress] = useState(false);
   const [showFrequencyAndSecondNarration, setShowFrequencyAndSecondNarration] = useState(false);
-const [visualizedTree, setVisualizedTree] = useState<HuffmanNode | null>(null);
+  const [visualizedTree, setVisualizedTree] = useState<HuffmanNode | null>(null);
 
- // Add this logging effect
   useEffect(() => {
     if (compressedBytes) {
-     console.log("compressedBytes state:", compressedBytes);
-
+      console.log("compressedBytes state:", compressedBytes);
     }
   }, [compressedBytes]);
 
-  const nextNarration = () => setNarrationIndex((i) => Math.min(i + 1, narrations.length - 1));
-function prevNarration() {
-  // If we're on the very first narration after continue,
-  // revert to the compress result summary/hex output view
-  if (showFrequencyAndSecondNarration && narrationIndex === 2) {
-    setShowFrequencyAndSecondNarration(false);
-    setShowContentAfterCompress(true);
-    setNarrationIndex(1);
-    // Don't reset any payload states!
-  } else {
-    setNarrationIndex((i) => Math.max(i - 1, 0));
+  const nextNarration = () => setNarrationIndex((i) => Math.min(i + 1, NARRATION_COUNT - 1));
+  function prevNarration() {
+    if (showFrequencyAndSecondNarration && narrationIndex === 2) {
+      setShowFrequencyAndSecondNarration(false);
+      setShowContentAfterCompress(true);
+      setNarrationIndex(1);
+      // Don't reset any payload states!
+    } else {
+      setNarrationIndex((i) => Math.max(i - 1, 0));
+    }
   }
-}
 
+  async function handleDemoLoadAndCompress(which: "small" | "large") {
+    try {
+      const { text, frequencyMap, tree, compressedBytes } = await loadAndCompressDemo(which);
 
-async function handleDemoLoadAndCompress(which: "small" | "large") {
-  try {
-    const { text, frequencyMap, tree, compressedBytes } = await loadAndCompressDemo(which);
+      setInputText(text);
+      setFrequencyMap(frequencyMap);
+      setCurrentTree(tree);
+      setCompressedBytes(compressedBytes);
 
-    setInputText(text);
-    setFrequencyMap(frequencyMap);
-    setCurrentTree(tree);
-    setCompressedBytes(compressedBytes);
-    setResult("");
-    setShowContentAfterCompress(true);
-    setShowFrequencyAndSecondNarration(false);
-    setNarrationIndex(1);
-    setMode("compress");
-  } catch (err) {
-    setResult(
-      err instanceof Error
-        ? `Error loading demo file: ${err.message}`
-        : "Error loading demo file."
-    );
+      // Always get the true bitstring using your own compress logic for safety!
+      const { compressed } = compress(text);
+      setCompressedBitString(compressed);
+
+      setResult("");
+      setShowContentAfterCompress(true);
+      setShowFrequencyAndSecondNarration(false);
+      setNarrationIndex(1);
+      setMode("compress");
+    } catch (err) {
+      setResult(
+        err instanceof Error
+          ? `Error loading demo file: ${err.message}`
+          : "Error loading demo file."
+      );
+    }
   }
-}
-
 
   function handleCompress() {
     if (!inputText) {
@@ -94,6 +93,7 @@ async function handleDemoLoadAndCompress(which: "small" | "large") {
     setFrequencyMap(freq);
     setCurrentTree(tree);
     setCompressedBytes(byteArr);
+    setCompressedBitString(compressed); // <-- Store the bitstring
     setResult("");
     setShowContentAfterCompress(true);
     setShowFrequencyAndSecondNarration(false);
@@ -124,7 +124,7 @@ async function handleDemoLoadAndCompress(which: "small" | "large") {
   function handleContinue() {
     setShowFrequencyAndSecondNarration(true);
     setShowContentAfterCompress(false);
-    setNarrationIndex((i) => Math.min(i + 1, narrations.length - 1));
+    setNarrationIndex((i) => Math.min(i + 1, NARRATION_COUNT - 1));
   }
 
   const originalSize = inputText.length;
@@ -139,87 +139,99 @@ async function handleDemoLoadAndCompress(which: "small" | "large") {
         {/* TOP PANEL */}
         <section className="huffman-top">
           <h1>Huffman Compression</h1>
-
-     <div className="huffman-explanation">
-            <NarrationPanel currentIndex={narrationIndex} />
-
-            {/* Nav buttons only after Continue */}
-    {showFrequencyAndSecondNarration && (
-  <div style={{ marginTop: 12, display: "flex", gap: "8px", justifyContent: "center" }}>
-    {(narrationIndex >= 2 && narrationIndex < narrations.length - 1) && (
-      <>
-        <button
-          onClick={prevNarration}
-          style={{ border: "1px solid #ccc", borderRadius: "1rem", padding: "0.5em" }}
-        >
-          ⬅️ Back
-        </button>
-        <button
-          onClick={nextNarration}
-          style={{ border: "1px solid #ccc", borderRadius: "1rem", padding: "0.5em" }}
-        >
-          Next ➡️
-        </button>
-      </>
-    )}
-    {narrationIndex === narrations.length - 1 && (
-      <button
-        onClick={prevNarration}
-        style={{ border: "1px solid #ccc", borderRadius: "1rem", padding: "0.5em" }}
-      >
-        ⬅️ Back
-      </button>
-    )}
+          <div className="huffman-explanation">
+            <NarrationPanel
+              currentIndex={narrationIndex}
+              originalSize={originalSize}
+              compressedSize={compressedSize}
+              ratio={ratio}
+              result={result}
+            />
+{showFrequencyAndSecondNarration && narrationIndex === 8 && compressedBytes && (
+  <div style={{ textAlign: "center", marginBottom: 16 }}>
+    <button
+      className="huffman-actionbtn"
+      onClick={handleDecompress}
+      style={{ width: "auto", padding: "0.5em 1.2em", marginTop: "1rem" }}
+    >
+      Decompress
+    </button>
   </div>
 )}
 
+            {/* Nav buttons only after Continue */}
+            {showFrequencyAndSecondNarration && (
+              <div style={{ marginTop: 12, display: "flex", gap: "8px", justifyContent: "center" }}>
+                {(narrationIndex >= 2 && narrationIndex < NARRATION_COUNT - 1) && (
+                  <>
+                    <button
+                      onClick={prevNarration}
+                      style={{ border: "1px solid #ccc", borderRadius: "1rem", padding: "0.5em" }}
+                    >
+                      ⬅️ Back
+                    </button>
+                    <button
+                      onClick={nextNarration}
+                      style={{ border: "1px solid #ccc", borderRadius: "1rem", padding: "0.5em" }}
+                    >
+                      Next ➡️
+                    </button>
+                  </>
+                )}
+                {narrationIndex === NARRATION_COUNT - 1 && (
+                  <button
+                    onClick={prevNarration}
+                    style={{ border: "1px solid #ccc", borderRadius: "1rem", padding: "0.5em" }}
+                  >
+                    ⬅️ Back
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
-{!(showFrequencyAndSecondNarration && narrationIndex >= 2) && (
-          <div className="huffman-buttons">
-            <div className="huffman-upload-row" id="buttons-wrapper">
-              <button onClick={() => handleDemoLoadAndCompress("small")} className="huffman-demobtn small">
-                Small Demo
-              </button>
-              <button onClick={() => handleDemoLoadAndCompress("large")} className="huffman-demobtn large">
-                Large Demo
-              </button>
-           
-            </div>
+          {!(showFrequencyAndSecondNarration && narrationIndex >= 2) && (
+            <div className="huffman-buttons">
+              <div className="huffman-upload-row" id="buttons-wrapper">
+                <button onClick={() => handleDemoLoadAndCompress("small")} className="huffman-demobtn small">
+                  Small Demo
+                </button>
+                <button onClick={() => handleDemoLoadAndCompress("large")} className="huffman-demobtn large">
+                  Large Demo
+                </button>
+              </div>
 
-            <div className="huffman-upload-row" style={{ marginTop: 8 }}>
-                 <label htmlFor="file-upload" className="huffman-browse-btn">
-                <span role="img" aria-label="file">📂</span> Browse...
-                <FileInput
-                  onLoad={setInputText}
-                  style={{ display: "none" }}
-                  inputProps={{ id: "file-upload" }}
-                />
-              </label>
-              {!compressedBytes ? (
-                <button
-                  onClick={handleCompress}
-                  className={`huffman-actionbtn${mode === "compress" ? " active" : ""}`}
-                >
-                  Compress
-                </button>
-              ) : (
-                <button
-                  onClick={handleDecompress}
-                  className={`huffman-actionbtn${mode === "decompress" ? " active" : ""}`}
-                >
-                  Decompress
-                </button>
-              )}
+              <div className="huffman-upload-row" style={{ marginTop: 8 }}>
+                <label htmlFor="file-upload" className="huffman-browse-btn">
+                  <span role="img" aria-label="file">📂</span> Browse...
+                  <FileInput
+                    onLoad={setInputText}
+                    style={{ display: "none" }}
+                    inputProps={{ id: "file-upload" }}
+                  />
+                </label>
+                {!compressedBytes ? (
+                  <button
+                    onClick={handleCompress}
+                    className={`huffman-actionbtn${mode === "compress" ? " active" : ""}`}
+                  >
+                    Compress
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleDecompress}
+                    className={`huffman-actionbtn${mode === "decompress" ? " active" : ""}`}
+                  >
+                    Decompress
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
-              )}
+          )}
         </section>
 
         {/* BOTTOM PANEL */}
         <section className="huffman-bottom">
-     
-
           {/* Stage 1: Show compressed output + narration 1 + Continue */}
           {showContentAfterCompress && !showFrequencyAndSecondNarration && (
             <>
@@ -266,83 +278,132 @@ async function handleDemoLoadAndCompress(which: "small" | "large") {
             </>
           )}
 
-          {/* Stage 2: Show frequency table at narrationIndex === 2.*/}
-              {showFrequencyAndSecondNarration && frequencyMap && narrationIndex === 2 && (
-  <div className="huffman-freqbox">
-    <div className="huffman-freqlabel">Character Frequency</div>
-    <FrequencyTable frequencyMap={frequencyMap} />
-  </div>
-)}
+          {/* Stage 2: Show frequency table at narrationIndex === 2. */}
+          {showFrequencyAndSecondNarration && frequencyMap && narrationIndex === 2 && (
+            <div className="huffman-freqbox">
+              <div className="huffman-freqlabel">Character Frequency</div>
+              <FrequencyTable frequencyMap={frequencyMap} />
+            </div>
+          )}
 
-{showFrequencyAndSecondNarration && narrationIndex === 3 && (
-  <div
-    className="huffman-freqbox"
-      style={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "flex-start",
-      padding: "1rem"
-    }}
-  >
-    <div className="huffman-freqlabel">
-      First 20 Readable Characters
+          {showFrequencyAndSecondNarration && narrationIndex === 3 && (
+            <div
+              className="huffman-freqbox"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                padding: "1rem"
+              }}
+            >
+              <div className="huffman-freqlabel">
+                First 20 Readable Characters
+              </div>
+              <div
+                style={{
+                  marginTop: "0.5rem",
+                  padding: "0.75rem 1rem",
+                  backgroundColor: "#fff",
+                  border: "1px solid #ccc",
+                  borderRadius: "6px",
+                  fontFamily: "monospace",
+                  fontSize: "1.3rem",
+                  whiteSpace: "pre-wrap",
+                  userSelect: "text",
+                  letterSpacing: "0.1em",
+                  maxWidth: "100%",
+                  minHeight: "2em",
+                }}
+                aria-label="First 20 readable characters"
+              >
+                {
+                  // Extract the first 20 readable chars: letters, numbers, punctuation, spaces
+                  Array.from(inputText)
+                    .filter((c) => c >= " " && c <= "~") // printable ASCII range
+                    .slice(0, 20)
+                    .join("")
+                }
+              </div>
+            </div>
+          )}
+
+          {showFrequencyAndSecondNarration && narrationIndex === 4 && (
+            <div
+              className="huffman-freqbox"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                padding: "1rem"
+              }}
+            >
+              <div className="huffman-freqlabel">
+                3D Huffman Tree Animation (First 20 Readable Characters)
+              </div>
+              <HuffmanTree3D inputText={inputText} onTreeBuilt={setVisualizedTree} />
+            </div>
+          )}
+
+          {showFrequencyAndSecondNarration && narrationIndex === 5 && visualizedTree && (
+            <div className="huffman-freqbox" style={{ padding: "1rem" }}>
+              <div className="huffman-freqlabel">Character Code Path Animation</div>
+              <HuffmanCodePathAnimation tree={visualizedTree} />
+            </div>
+          )}
+
+          {showFrequencyAndSecondNarration && narrationIndex === 6 && compressedBitString && (
+            <div className="huffman-freqbox" style={{ padding: "1rem" }}>
+              <div className="huffman-freqlabel">Binary to Hex</div>
+              <BinaryStringToHexAnimator binaryString={compressedBitString} maxBytesToDisplay={20} />
+            </div>
+          )}
+
+{showFrequencyAndSecondNarration && narrationIndex === 7 && (
+    <div className="huffman-top-content-row">
+      <div className="huffman-original-content">
+        <div
+          className="huffman-box-label"
+          style={{ backgroundColor: "#98beed", padding: "0.2rem" }}
+        >
+          Original Contents
+        </div>
+        <TextInput value={inputText} onChange={setInputText} disabled />
+      </div>
+      <div className="huffman-output-area">
+        <div
+          className="huffman-box-label"
+          style={{ backgroundColor: "#e2eafc", padding: "0.2rem" }}
+        >
+          Hex Output
+        </div>
+        <HexOutputList
+          hexOutput={toHex(compressedBytes ?? new Uint8Array())}
+          containerHeight={180}
+        />
+      </div>
     </div>
-    <div
-      style={{
-        marginTop: "0.5rem",
-        padding: "0.75rem 1rem",
-        backgroundColor: "#fff",
-        border: "1px solid #ccc",
-        borderRadius: "6px",
-        fontFamily: "monospace",
-        fontSize: "1.3rem",
-        whiteSpace: "pre-wrap",
-        userSelect: "text",
-        letterSpacing: "0.1em",
-        maxWidth: "100%",
-        minHeight: "2em",
-      }}
-      aria-label="First 20 readable characters"
-    >
-      {
-        // Extract the first 20 readable chars: letters, numbers, punctuation, spaces
-        Array.from(inputText)
-          .filter((c) => c >= " " && c <= "~") // printable ASCII range
-          .slice(0, 20)
-          .join("")
-      }
+  )}
+
+{showFrequencyAndSecondNarration && narrationIndex === 8 && (
+  <div className="huffman-top-content-row" style={{ marginTop: 16 }}>
+    <div className="huffman-original-content">
+      <div className="huffman-box-label" style={{ backgroundColor: "#98beed", padding: "0.2rem" }}>
+        Original Contents
+      </div>
+      <TextInput value={inputText} onChange={() => {}} readOnly />
+    </div>
+    <div className="huffman-output-area">
+      <div className="huffman-box-label" style={{ backgroundColor: "#d4eed8", padding: "0.2rem" }}>
+        Decompressed Output
+      </div>
+          <TextInput value={result} onChange={() => {}} readOnly placeholder="" />
+
     </div>
   </div>
 )}
 
-
-{showFrequencyAndSecondNarration && narrationIndex === 4 && (
-  <div
-    className="huffman-freqbox"
-      style={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "flex-start",
-      padding: "1rem"
-    }}
- 
-  >
-    <div className="huffman-freqlabel">
-      3D Huffman Tree Animation (First 20 Readable Characters)
-    </div>
- <HuffmanTree3D inputText={inputText} onTreeBuilt={setVisualizedTree} />
-
-  </div>
-)}
-
-{showFrequencyAndSecondNarration && narrationIndex === 5 && visualizedTree && (
-  <div className="huffman-freqbox" style={{ padding: "1rem" }}>
-    <div className="huffman-freqlabel">Character Code Path Animation</div>
-    <HuffmanCodePathAnimation tree={visualizedTree} />
-  </div>
-)}
 
 
 
